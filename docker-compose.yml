@@ -1,0 +1,23 @@
+version: "3.3"
+services:
+
+  neural:
+    image: lifefilm/fastai2_fastapi:${TAG-latest}'
+    env_file:
+      - .env
+    environment:
+      - SERVER_NAME=${DOMAIN?Variable not set}
+      - SERVER_HOST=https://${DOMAIN?Variable not set}
+      # Allow explicit env var override for tests
+      - SMTP_HOST=${SMTP_HOST}
+    volumes:
+      - ./neural:/app
+    ports:
+      - 8001:8001
+    build:
+      context: ./neural
+      dockerfile: Dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+    command: uvicorn main:app --reload --host 0.0.0.0 --port 8001
+
