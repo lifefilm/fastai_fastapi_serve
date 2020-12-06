@@ -1,9 +1,10 @@
 # https://fastapi.tiangolo.com/advanced/settings/
+from pathlib import Path
 
 from functools import lru_cache
 import secrets
 from typing import Any, Dict, List, Optional, Union
-from pydantic import AnyHttpUrl, BaseSettings, HttpUrl, PostgresDsn, validator, AnyUrl
+from pydantic import AnyHttpUrl, BaseSettings, HttpUrl, PostgresDsn, validator, AnyUrl, BaseModel
 
 
 class MongoDsn(AnyUrl):
@@ -14,6 +15,7 @@ class MongoDsn(AnyUrl):
 class Settings(BaseSettings):
     API_STR: str = "/api"
     SECRET_KEY: str = secrets.token_urlsafe(32)
+    TOKEN: str = secrets.token_urlsafe(32)
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     SERVER_NAME: str

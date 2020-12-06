@@ -2,7 +2,7 @@ aiofiles==0.6.0
 fastapi==0.62.0
 iopath==0.1.2
 odmantic==0.3.1
-pydantic==1.7.3
+pydantic[dotenv]==1.7.3
 python-multipart==0.0.5
 requests==2.25.0
 typer==0.3.2
