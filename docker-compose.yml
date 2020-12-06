@@ -8,14 +8,12 @@ services:
     environment:
       - SERVER_NAME=${DOMAIN?Variable not set}
       - SERVER_HOST=https://${DOMAIN?Variable not set}
-      # Allow explicit env var override for tests
-      - SMTP_HOST=${SMTP_HOST}
     volumes:
-      - ./neural:/app
+      - .:/app
     ports:
       - 8001:8001
     build:
-      context: ./neural
+      context: .
       dockerfile: Dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}

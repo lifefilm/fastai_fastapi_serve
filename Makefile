@@ -24,19 +24,25 @@ ttt:
 
 
 local: ## Запускает джангу по адрессу uvicorn
-	uvicorn api.main:app --reload
+	uvicorn main:app --reload
 
 login: ## Авторизоваться в регистре gitlab
 	@docker login registry.gitlab.com
 
 build: ## Сбилдить проект
-	@docker-compose build
+    @req
+	docker-compose build
 
 push: ## Закачать в ригистр сбилдинные образы
 	@docker-compose push
 
 pull: ## Скачать из регистра последний образ
 	@docker-compose pull
+
+req: requirements.txt generate
+    @pipenv lock -r > requirements.back.txt
+
+
 
 
 clear-pyc: ## Очистка pyc файлов, иногда нужно для запуска тестов

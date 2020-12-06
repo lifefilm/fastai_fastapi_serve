@@ -8,6 +8,10 @@ fastapi = "*"
 uvicorn = "*"
 odmantic = "*"
 requests = "*"
+typer = "*"
+aiofiles = "*"
+iopath = "*"
+python-multipart = "*"
 
 [dev-packages]
 pytest-asyncio = "*"
@@ -16,5 +20,5 @@ httpx = "*"
 [requires]
 python_version = "3.8"
 
-[packages.pydantic]
-extras = [ "dotenv",]
+[packages]
+pydantic = {extras = [ "dotenv",]}

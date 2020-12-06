@@ -23,16 +23,25 @@ RUN curl -o ~/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest
 ENV PATH /opt/conda/bin:$PATH
 # This must be done before pip so that requirements.txt is available
 
-RUN /opt/conda/bin/conda install -y -c pytorch -c fastai fastai=2.1.8 cudatoolkit=10.1
-
-RUN /opt/conda/bin/conda  uninstall -y --force pillow libjpeg-turbo
+RUN /opt/conda/bin/conda install -y -c pytorch -c fastai cudatoolkit=10.1
+#RUN /opt/conda/bin/conda  uninstall -y --force pillow libjpeg-turbo
 RUN /opt/conda/bin/conda  install -c fastai/label/test pillow
 
 RUN pip install pipenv
 RUN pipenv --python=/opt/conda/bin/python --site-packages
 
-RUN mkdir /app && cd /app
-COPY Pipfile* /app/
-WORKDIR /app
+RUN /opt/conda/bin/conda install -y -c pytorch -c fastai fastai==2.1.8
 
-RUN pipenv install --system --deploy --clear
+COPY ./requirements.txt /requirements.txt
+RUN pip install -r /requirements.txt
+RUN mkdir /app && cd /app
+
+#Error: What? packages already exists?
+#COPY ./Pipfile /app/Pipfile
+#COPY ./Pipfile.lock /app/Pipfile.lock
+#RUN pipenv lock -r > requirements.txt
+#RUN pip install -r /requirements.txt
+
+#RUN pipenv install --python=/opt/conda/bin/python --system --deploy --clear
+
+WORKDIR /app

@@ -1,26 +1,84 @@
-from datetime import datetime
-from enum import Enum
-from typing import Optional, Union, List, Dict
-from uuid import UUID, uuid4
-from fastapi import FastAPI, Body, Depends, HTTPException, Header, Form
-from pydantic import BaseModel, HttpUrl, PositiveFloat, PositiveInt
-from pydantic.main import Path
+from fastapi import FastAPI, File, Form, UploadFile, Path
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastai.vision.all import *
+import uvicorn
+import asyncio
+# import aiohttp
+# import aiofiles
+from fastapi.middleware.cors import CORSMiddleware
 
-from motor.motor_asyncio import AsyncIOMotorClient
-from odmantic import AIOEngine, Model, ObjectId, Field
 
-from core.config import settings
+app = FastAPI()
+app.mount("/static", StaticFiles(directory="html"), name="static")
 
-client = AsyncIOMotorClient(settings.MONGO_DATABASE_URI)
-engine = AIOEngine(motor_client=client, database="catalog_shop")
 
-app = FastAPI(
-    title=settings.PROJECT_NAME, openapi_url=f"{settings.API_STR}/openapi.json"
+origins = [
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
-async def common_parameters(q: Optional[str] = None, skip: int = 0, limit: int = 100):
-    return {"q": q, "skip": skip, "limit": limit}
+path = Path(__file__).parent
+# REPLACE THIS WITH YOUR URL
+export_url = ""
+export_file_name = 'models/efficientnet_b2.pkl'
 
 
+# async def download_file(url, dest):
+#     if dest.exists():
+#         return
+#     async with aiohttp.ClientSession() as session:
+#         async with session.get(url) as response:
+#             if response.status == 200:
+#                 f = await aiofiles.open(dest, mode='wb')
+#                 await f.write(await response.read())
+#                 await f.close()
 
+
+async def setup_learner():
+    # await download_file(export_url, path / export_file_name)
+    try:
+        learn = load_learner(path/export_file_name)
+        learn.dls.device = 'cpu'
+        return learn
+    except RuntimeError as e:
+        if len(e.args) > 0 and 'CPU-only machine' in e.args[0]:
+            print(e)
+            message = "\n\nThis model was trained with an old version of fastai and will not work in a CPU environment.\n\nPlease update the fastai library in your training environment and export your model again.\n\nSee instructions for 'Returning to work' at https://course.fast.ai."
+            raise RuntimeError(message)
+        else:
+            raise
+
+
+learn = None
+@app.on_event("startup")
+async def startup_event():
+    """Setup the learner on server start"""
+    global learn
+    loop = asyncio.get_event_loop()  # get event loop
+    tasks = [asyncio.ensure_future(setup_learner())]  # assign some task
+    learn = (await asyncio.gather(*tasks))[0]  # get tasks
+
+
+@app.get('/')
+async def homepage():
+    html_content = (path / 'html/index.html').open().read()
+    return HTMLResponse(content=html_content, status_code=200)
+
+
+@app.post("/analyze")
+async def analyze(file: bytes = File(...)):
+    pred = learn.predict(file)
+    return {"result": pred[0]}
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=80)
