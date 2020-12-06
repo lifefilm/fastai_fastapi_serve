@@ -6,7 +6,7 @@ import uuid
 from iopath.common.download import download
 from pydantic import AnyUrl
 
-from core.config import settings
+from .config import settings
 
 import hashlib
 import requests
