@@ -62,18 +62,18 @@ class PayloadPredictImage(BaseModel):
 
         return self.file_hash_path_pkl
 
-    def load(self, file_path=None):
+    def load(self, file_path_pkl=None):
         """
         Load pkl file into SuperClass with vector from hashed path genereated from "file_url"
-        :param file_path:
+        :param file_path_pkl:
         :return:
         """
-        if not file_path:
-            file_path = self.file_hash_path_pkl
+        if not file_path_pkl:
+            file_path_pkl = self.file_hash_path_pkl
 
-        print(file_path)
-        assert os.path.exists(file_path), f"Not founded {file_path} to load"
-        with open(file_path, 'rb') as f:
+        print(file_path_pkl)
+        assert os.path.exists(file_path_pkl), f"Not founded {file_path_pkl} to load"
+        with open(file_path_pkl, 'rb') as f:
             loaded: PayloadPredictImage = pickle.load(f)
         print(f'load predicted: {loaded.predicted.label}')
         super().__init__(**loaded.dict())

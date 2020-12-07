@@ -116,8 +116,8 @@ async def predictions(payload: PayloadPredictImage):
         payload.export()
 
     if payload.predicted.label:
-        # return payload.dict(exclude={'predicted': {'vector'}})
-        return payload.dict()
+        return payload.dict(exclude={'predicted': {'vector'}})
+        # return payload.dict()
     else:
         return JSONResponse(status_code=404, content={"message": "Item not predicted"})
 
