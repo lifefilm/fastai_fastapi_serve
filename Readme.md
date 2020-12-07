@@ -39,7 +39,11 @@ http --json POST  http://localhost:8001/predictions/efficientnet file_url=https:
 
 ```
 
+### run in console without api
+
+`docker-compose run --rm neural python main.py https://github.com/lifefilm/fastai_fastapi_serve/raw/master/tests/test.jpg`
+
 ## Based on ideas
 
-* https://github.com/muellerzr/fastai-v3-Render
+*https://github.com/render-examples/fastai-v3
 * https://github.com/pytorch/serve

@@ -32,11 +32,6 @@ class BaseHandler(BaseModel, ABC):
     def initialize(self):
         """
         Initialize function loads the model file and initialized the model object.
-        Args:
-            context (context): It is a JSON Object containing information
-            pertaining to the model artifacts parameters.
-        Raises:
-            RuntimeError: Raises the Runtime error when the model is missing
         """
 
         model_path_full = self.model_store / self.model_name
@@ -76,7 +71,7 @@ class BaseHandler(BaseModel, ABC):
         """
         return data
 
-    def predict(self, data):
+    def handle(self, data):
         """
         Entry point for default handler. It takes the data from the input request and returns
            the predicted outcome for the input.

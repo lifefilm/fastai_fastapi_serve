@@ -37,34 +37,31 @@ app.add_middleware(
 
 path = Path(__file__).parent
 
-learner: ImageClassifier = None
+learner = ImageClassifier(model_name="efficientnet_b2.pkl")
+learner.initialize()
 
 
-async def setup_learner():
-    learner = ImageClassifier(model_name="efficientnet_b2.pkl")
-    learner.initialize()
-    return learner
+# TODO: Вопрос, нафига нужна была ассинхронная инициализация?
+# async def setup_learner():
+#     learner = ImageClassifier(model_name="efficientnet_b2.pkl")
+#     learner.initialize()
+#     return learner
 
-
-def run_learner_predict(file_path, learner) -> ResponseSingleLabel:
-    pred, features_array = learner.predict(file_path)
-    item = ResponseSingleLabel()
-    item.label = pred
-    item.vector = features_array.tolist()
-    return item
-
-
-@app.on_event("startup")
-async def startup_event():
-    """Setup the learner on server start"""
-    global learner
-    loop = asyncio.get_event_loop()  # get event loop
-    tasks = [asyncio.ensure_future(setup_learner())]  # assign some task
-    learner = (await asyncio.gather(*tasks))[0]  # get tasks
+# @app.on_event("startup")
+# async def startup_event():
+#     """Setup the learner on server start"""
+#     global learner
+#     loop = asyncio.get_event_loop()  # get event loop
+#     tasks = [asyncio.ensure_future(setup_learner())]  # assign some task
+#     learner = (await asyncio.gather(*tasks))[0]  # get tasks
 
 
 @app.on_event("shutdown")
 async def shutdown():
+    """
+    todo: dont worked
+    """
+    print("Stop and delete /tmp/download/*")
     files = glob.glob('/tmp/download/*')
     for f in files:
         os.remove(f)
@@ -78,7 +75,13 @@ async def homepage():
 
 @app.post("/analyze")
 async def analyze(file: bytes = File(...)):
-    item = run_learner_predict(file, learner)
+    """
+    For HTML form in homepage
+    :param file:
+    :return:
+    """
+
+    item = learner.handle(file)
 
     if item.label:
         return item.label
@@ -89,15 +92,14 @@ async def analyze(file: bytes = File(...)):
 @app.post("/predictions/efficientnet")
 async def predictions(file_url: PayloadPredictImage):
     """
-    curl -i --data '{"file_url":"https://s3.posred.pro/media/order_image/82673/order_kQLUjia.jpeg"}' http://localhost:8001/predictions/efficientnet
+    Main api for predict
     :param file_url:
     :return:
     """
 
-    print(file_url)
     file_path = file_url.download()
 
-    item = run_learner_predict(file_path, learner)
+    item = learner.handle(file_path)
 
     if item.label:
         return item.label
@@ -110,14 +112,17 @@ app_typer = typer.Typer()
 
 @app_typer.command()
 def predict(url: str):
-    learner = ImageClassifier(model_name="efficientnet_b2.pkl")
-    learner.initialize()
+    """
+    Run local with typer
+    :param url:
+    :return:
+    """
 
     file_url = PayloadPredictImage(file_url=url)
 
     file_path = file_url.download()
 
-    item = run_learner_predict(file_path, learner)
+    item = learner.handle(file_path)
 
     typer.echo(item.label)
 
