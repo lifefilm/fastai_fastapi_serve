@@ -1,20 +1,23 @@
+import sys
 from pathlib import Path
-
 import glob
 
 import os
 import typer
+import urllib
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-
 import asyncio
 
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
-from schemas.predict_response import ResponseSingleLabel, PayloadPredictImage
+from schemas.payload_predict_image import PayloadPredictImage
+from schemas.response_single_label import ResponseSingleLabel
 from handler.image_classifier import ImageClassifier
+
+sys.path.append("/app")
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="html"), name="static")
@@ -90,19 +93,31 @@ async def analyze(file: bytes = File(...)):
 
 
 @app.post("/predictions/efficientnet")
-async def predictions(file_url: PayloadPredictImage):
+async def predictions(payload: PayloadPredictImage):
     """
     Main api for predict
     :param file_url:
     :return:
     """
 
-    file_path = file_url.download()
+    print(payload)
+    if payload.check_predicted_file_exist:
+        print('Load existed payload')
+        payload.load()
+    else:
+        try:
+            file_path = payload.download()
+        except urllib.error.HTTPError:
+            return JSONResponse(status_code=404, content={"message": "Item not downloaded"})
 
-    item = learner.handle(file_path)
+        item = learner.handle(file_path)
 
-    if item.label:
-        return item.label
+        payload.predicted = item
+        payload.export()
+
+    if payload.predicted.label:
+        # return payload.dict(exclude={'predicted': {'vector'}})
+        return payload.dict()
     else:
         return JSONResponse(status_code=404, content={"message": "Item not predicted"})
 

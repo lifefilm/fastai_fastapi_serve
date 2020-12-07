@@ -305,3 +305,4 @@ config/keys/*
 data/*
 dataset/*
 models/*
+predicted/*

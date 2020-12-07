@@ -3,7 +3,7 @@ from abc import ABC
 from functools import lru_cache
 from fastai.vision.all import *
 from .base import BaseHandler
-from schemas.predict_response import ResponseSingleLabel
+from schemas.response_single_label import ResponseSingleLabel
 
 
 class SaveFeatures:
@@ -48,21 +48,13 @@ class ImageClassifier(BaseHandler, ABC):
         из нижнего слоя длиной 512, через хук SaveFeatures
         """
 
-
-        @lru_cache()
-        def __predict(_data):
-            return self.model.predict(_data)[0]
-
-
         assert img, "Where you image file?"
 
         features_hook = SaveFeatures(self.model.model[1][4])
 
         # img = PILImage.create(image_path)
 
-        predicted = __predict(img)
-
-        # print(__predict.cache_info())
+        predicted =  self.model.predict(img)[0]
 
         print(predicted)
 
