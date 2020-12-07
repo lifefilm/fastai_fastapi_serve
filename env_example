@@ -1,0 +1,22 @@
+DOMAIN=localhost
+
+STACK_NAME=catalog_shop
+
+DOCKER_IMAGE_NEURAL=lifefilm/fastai2_fastapi
+
+# Backend
+BACKEND_CORS_ORIGINS=
+PROJECT_NAME=
+SECRET_KEY=
+TOKEN=GX1GGpQUcx
+
+USERS_OPEN_REGISTRATION=False
+
+SENTRY_DSN=
+
+# MONGO
+MONGO_SERVER=db
+MONGO_DB=root
+MONGO_USER=root
+MONGO_PASSWORD=rootpassword
+
