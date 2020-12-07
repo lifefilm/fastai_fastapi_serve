@@ -57,12 +57,12 @@ def download_s3(image_url,
 
 
 def download_file(file_url: AnyUrl, dir="/tmp/download"):
-    print(f"Start download {file_url}")
+    # print(f"Start download {file_url}")
 
     dir_hash, hash = get_hash_path(file_url, dir)
     _filename = dir_hash / hash
 
-    print(_filename)
+    # print(_filename)
 
     x = download(file_url, dir_hash, filename=_filename, progress=False)
     print('downloaded', x)

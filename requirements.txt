@@ -10,3 +10,6 @@ uvicorn==0.12.3
 
 timm
 wwf
+
+pytest
+httpx
