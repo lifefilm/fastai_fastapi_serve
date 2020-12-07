@@ -12,7 +12,7 @@ client = TestClient(app)
 def test_post_predict():
     response = client.post(
         url="/predictions/efficientnet",
-        json={"file_url": "https://s3.posred.pro/media/order_image/82673/order_kQLUjia.jpeg"}
+        json={"file_url": "https://github.com/lifefilm/fastai_fastapi_serve/raw/master/tests/test.jpg"}
     )
     print(response.json())
 
