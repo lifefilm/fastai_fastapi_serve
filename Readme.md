@@ -20,7 +20,7 @@ docker-compose up
 
 ```
 
-Download from docker hub https://hub.docker.com/repository/docker/lifefilm/fastai2_fastapi
+Download from docker hub https://hub.docker.com/r/lifefilm/fastai2_fastapi
 
 ## testing
 

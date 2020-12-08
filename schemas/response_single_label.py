@@ -20,4 +20,3 @@ class ResponseSingleLabel(BaseModel):
     vector: NumpyNDArray = None
     probability: float = None
 
-
