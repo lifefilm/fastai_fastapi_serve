@@ -12,6 +12,8 @@ typer = "*"
 aiofiles = "*"
 iopath = "*"
 python-multipart = "*"
+timm = "*"
+wwf = "*"
 
 [dev-packages]
 pytest-asyncio = "*"

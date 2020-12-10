@@ -2,7 +2,7 @@ version: "3.3"
 services:
 
   neural:
-    image: lifefilm/fastai2_fastapi:${TAG-latest}'
+    image: lifefilm/fastai2_fastapi_cpu:${TAG-latest}'
     env_file:
       - .env
     environment:
@@ -10,6 +10,8 @@ services:
       - SERVER_HOST=https://${DOMAIN?Variable not set}
     volumes:
       - .:/app
+      - /tmp:/tmp
+      - ./predicted:/app/predicted
     ports:
       - 8001:8001
     build:
@@ -17,5 +19,7 @@ services:
       dockerfile: Dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
+    networks:
+      - default
     command: uvicorn main:app --reload --host 0.0.0.0 --port 8001
 
