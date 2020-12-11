@@ -2,6 +2,8 @@ import sys
 
 from fastapi.testclient import TestClient
 
+from schemas.payload_predict_image import PayloadPredictImage
+
 sys.path.append("/app")
 
 from main import *
@@ -13,7 +15,7 @@ original = {
     "file_path_pkl": "/tmp/download/65/fb/65fbedf6995333b79e9254cf49420130.pkl",
     "file_url": "https://github.com/lifefilm/fastai_fastapi_serve/raw/master/tests/test.jpg",
     "predicted": {
-        "label": 1304,
+        "label": 1178,
         "probability": None
     }
 }
