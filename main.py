@@ -86,7 +86,7 @@ async def analyze(file: bytes = File(...)):
     item = learner.handle(file)
 
     if item.label:
-        return item.label
+        return item
     else:
         return JSONResponse(status_code=404, content={"message": "Item not predicted"})
 
